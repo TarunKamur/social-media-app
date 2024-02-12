@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/*
   workflow_dispatch:
 
 jobs:
@@ -44,18 +43,16 @@ jobs:
           push: true
           tags: btarunkumar/social-media-app:latest  # Replace with your Docker Hub repo and image tag
 
-      # Deploy to GitHub Pages for main branch
-      - name: Deploy to GitHub Pages (Main)
-        if: github.ref == 'refs/heads/main'
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: client # The folder where the build artifacts are located
+  deploy_main:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
 
-      # Additional deploy steps for feature branches if needed
-      - name: Deploy to GitHub Pages (Feature Branch)
-        if: startsWith(github.ref, 'refs/heads/feature/')
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
